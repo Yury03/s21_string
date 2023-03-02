@@ -1,17 +1,7 @@
 #include "s21_string.h"
 
-char *s21_strchr(const char *str, int c) {
-    char *pr = (char *)str;
-    if (*pr == '\0' && c == 0) {
-        return (pr); // УНИЧТОЖИТЬ!!!
-    }
-    for (; *pr != '\0'; pr++) {
-        if (*pr == c) {
-            return (char *)pr;//УНИЧТОЖИТЬ!!!
-        }
-    }
-    if (*pr == '\0' && c == 0) {
-        return (pr); // УНИЧТОЖИТЬ!!!
-    }
-    return 0; // УНИЧТОЖИТЬ!!!
-}
+char *s21_strchr(const char *str1, int c) {
+  char *res = S21_NULL;
+  while (*str1 != c && *str1) str1++;  //  первое вхождение с в str1
+  return res = (c == *str1) ? (char *)str1 : res;
+}  // str1[i] если 'c' == str1 иначе NULL

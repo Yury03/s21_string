@@ -29,12 +29,12 @@ START_TEST(strstr_4) {
 }
 END_TEST
 
-//START_TEST(strstr_5) {
-//  char s1[] = "";
- // char s2[] = "";
+// START_TEST(strstr_5) {
+//   char s1[] = "";
+//  char s2[] = "";
 //  ck_assert_pstr_eq(strstr(s1, s2), s21_strstr(s1, s2));
 //}
-//END_TEST
+// END_TEST
 
 START_TEST(strstr_6) {
   char s1[] = "Hello, world!";
@@ -100,7 +100,7 @@ Suite *test_strstr(void) {
   tcase_add_test(tc, strstr_2);
   tcase_add_test(tc, strstr_3);
   tcase_add_test(tc, strstr_4);
- // tcase_add_test(tc, strstr_5);
+  // tcase_add_test(tc, strstr_5);
   tcase_add_test(tc, strstr_6);
   tcase_add_test(tc, strstr_7);
   tcase_add_test(tc, strstr_8);

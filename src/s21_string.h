@@ -1,14 +1,25 @@
 #ifndef S21_STRINGS_H
 #define S21_STRINGS_H
+#include <math.h>
 #include <stdarg.h>
 #include <stdbool.h>
+#include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
-
 #define S21_NULL ((void *)0)
-
 typedef unsigned long s21_size_t;
-
+typedef struct flags {
+  int minus;
+  int plus;
+  int sharp;
+  int space;
+  int zero;
+  int width;
+  int precision;
+  int prec;
+  int length;
+  int specificator;
+} flags;
 // Выполняет поиск первого вхождения символа c (беззнаковый тип) в первых n
 // байтах строки, на которую указывает аргумент str.
 void *s21_memchr(const void *str, int c, s21_size_t n);
@@ -67,11 +78,11 @@ s21_size_t s21_strlen(const char *str);
 
 // Находит первый символ в строке str1, который соответствует любому символу,
 // указанному в str2.
-char *s21_strpbrk(const char *str1, const char *str2);//МНОГОРЕТЕРНОВОСТЬ
+char *s21_strpbrk(const char *str1, const char *str2);
 
 // Выполняет поиск последнего вхождения символа c (беззнаковый тип) в строке, на
 // которую указывает аргумент str.
-char *s21_strrchr(const char *str, int c); // МНОГОРЕТЕРНОВОСТЬ
+char *s21_strrchr(const char *str, int c);
 
 // Вычисляет длину начального сегмента str1, который полностью состоит из
 // символов str2.
@@ -84,12 +95,54 @@ char *s21_strstr(const char *haystack, const char *needle);
 // Разбивает строку str на ряд токенов, разделенных delim.
 char *s21_strtok(char *str, const char *delim);
 
-//
-
 // допы
 void *s21_to_upper(const char *str);
 void *s21_to_lower(const char *str);
 void *s21_insert(const char *src, const char *str, s21_size_t start_index);
 void *s21_trim(const char *src, const char *trim_chars);
+
+// основные функции и парсеры  для спринтф
+int s21_sprintf(char *str, const char *format, ...);
+const char *firstParser(const char *str, flags *data);
+const char *secondParser(const char *str, flags *data);
+char *callSpecifFun(va_list *ptr, flags data, char **str, const char **format,
+                    unsigned int *count);
+char *integers(char **str, flags a, va_list *ptr, unsigned int *count);
+char *uintegers(char **str, flags a, va_list *ptr, unsigned int *count);
+char *doubles(char **str, flags a, va_list *ptr, unsigned int *count);
+char *chars(char **str, flags a, va_list *ptr, const char **format,
+            unsigned int *count);
+char *charPointers(char **str, flags a, va_list *ptr, const char **format,
+                   unsigned int *count);
+char *wCharPointers(char **str, flags data,  // для работы с символами,
+                    va_list *ptr,  // которые выходят за рамки ASCII
+                    const char **format, unsigned int *count);
+char *pointers(char **str, flags a, va_list *ptr, unsigned int *count);
+char *integerPointers(char **str, va_list *ptr, unsigned int count);
+
+// вспомогательные функции (в libs.c)
+char *reverse(char s[]);
+char *ourItoa(long long int value, char *result, int base);
+char *ourUItoa(long long unsigned value, char *result, int base);
+int stringToInteger(const char *str);
+double stringToDouble(const char *s);
+void cleanFlags(flags *data);
+void widthHelper(char *result, flags data, int *i, int strlength);
+
+void process_g(int *specificator, int *precision, char *nu, int *og,
+               long double x);
+void cut_off_zeros(char *nu, flags data, int og);
+void to_upper(char *x);
+void rounding_double(int length, int precision, char *nu, flags data);
+void work_with_e(long double x, flags data, int precision, char **nu1, int og);
+int value_to_str(long double x, char *nu, long double x1, int *length);
+void double_to_str(long double x, long double x1, char *nu, int *length);
+void recursive_long_int(long double d_arg, int symbols, char **str);
+void e_to_str(long double x, char *nu, char *nunu, flags a, int *i,
+              int precision);
+void print_base(flags data, unsigned long x, char *result, int *i,
+                int *precision);
+void negativeSign(char *str, int i);
+void positiveSign(flags data, char *str, int i);
 
 #endif  // S21_STRING_H

@@ -1,5 +1,3 @@
-#include <string.h>
-
 #include "s21_string.h"
 
 #if defined(__linux__)
@@ -257,10 +255,12 @@ char *errors[] = {"Undefined error: 0",
 char errors_message[ERROR_SIZE] = {0};
 
 char *s21_strerror(int errnum) {
+  char *result = S21_NULL;
   if (errnum >= 0 && errnum < SUM_ERRORS) {
-    return (errors[errnum]);
+    result = errors[errnum];
   } else {
-    sprintf(errors_message, OUT_ERROR, errnum);  // todo s21
-    return (errors_message);
+    s21_sprintf(errors_message, OUT_ERROR, errnum);  // todo s21
+    result = errors_message;
   }
+  return result;
 }

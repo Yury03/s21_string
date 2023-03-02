@@ -1,4 +1,5 @@
 #include "s21_string.h"
+
 char *s21_strpbrk(const char *str1, const char *str2) {
   int flag = 0;
   s21_size_t i;
@@ -9,12 +10,10 @@ char *s21_strpbrk(const char *str1, const char *str2) {
       if (str1[i] == str2[j]) {  // todo должно работать
         flag = 1;
         break;
-        // return (char *)&str1[i];  // УНИЧТОЖИТЬ
       }
     }
   }
   i--;
-  // return 0;
-  return (flag == 1) ? (char *)&str1[i]
-                     : S21_NULL;  /// todo без него варнинг но он не нужен
+
+  return (flag == 1) ? (char *)&str1[i] : S21_NULL;
 }

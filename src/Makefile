@@ -1,59 +1,44 @@
 CC = gcc
 FLAGS = -Wall -Wextra -Werror -std=c11
-TST_LIBS = -lcheck #$(shell pkg-config --cflags --libs check)
+TST_LIBS = -lcheck
 ifeq ($(shell uname), Linux)
 	TST_LIBS += -lpthread -lrt -lsubunit -lm
 endif
-ifneq (,$(findstring desperos,$(MAKECMDGOALS)))
-    DEBUG= -g -DDEBUG -fsanitize=address
-else ifneq (,$(findstring fartlouv,$(MAKECMDGOALS)))
-	DEBUG= -g -fsanitize=address
-else ifneq (,$(findstring sallieam,$(MAKECMDGOALS)))
-	DEBUG= -g -fsanitize=address
-else ifneq (,$(findstring tiaraurz,$(MAKECMDGOALS)))
-	DEBUG= -g -fsanitize=address
-endif
+
 LIB_NAME = s21_string
 
 SRCS=$(wildcard s21_*.c)
 OBJS=$(SRCS:.c=.o)
-SRCS2=$(wildcard tests/*.c)
-OBJS2=$(SRCS2:.c=.o)
 
-all: clean test
+all: clean $(LIB_NAME).a
+	$(CC) $(FLAGS) -g tests/*.c $(LIB_NAME).a $(TST_LIBS) -o test
+	rm -rf *.o
 
-rebuild: all
+
+rebuild: clean all
 
 clean:
 	rm -rf *.o test *.a *.gcno *.gcda *.gcov \
-	*.html *.css *.info report main/*.o desperos \
-	sallieam fartlouv tiaraurz test.dSYM \
-	tests/*.o tests/*/*.o tests/*/*/*.o \
-	tests/*/*/*/*.o
+	*.html *.css *.info report   test.dSYM \
+	tests/*.o
 
-clang-format:
-	clang-format -n -style=Google *.c *.h tests/*.c tests/*.h
-
-set-style-google:
+format:
 	clang-format -i -style=Google *.c *.h tests/*.c tests/*.h
 
-%.o: %.c
-	$(CC) $(FLAGS) $(DEBUG) -c $< -o $@
+check:
+	clang-format -n -style=Google *.c *.h tests/*.c tests/*.h
 
-$(LIB_NAME).a: $(OBJS)
+%.o: %.c
+	$(CC) $(FLAGS) -c $< -o $@
+
+s21_string.a: $(OBJS)
 	ar rc $(LIB_NAME).a $^
 	ranlib $(LIB_NAME).a
 	rm -rf *.o
 
 test: clean $(LIB_NAME).a
 	$(CC) $(FLAGS) -g tests/*.c $(LIB_NAME).a $(TST_LIBS) -o test
-
-test_leak: clean
-	$(CC) $(FLAGS) -g -DTEST_LEAK $(SRCS) tests/*.c $(TST_LIBS) -o test
-#	$(CC) $(FLAGS) -g -fsanitize=address -DTEST_LEAK tests/*.c $(LIB_NAME).a $(TST_LIBS) -o
-test_debug: clean $(LIB_NAME).a
-	$(CC) $(FLAGS) -g -DDEBUG tests/*.c $(LIB_NAME).a $(TST_LIBS) -o test
-
+	./test
 
 add_coverage_flag:
 	$(eval FLAGS += --coverage)
@@ -64,3 +49,7 @@ gcov_report: add_coverage_flag test
 	genhtml -o report/ test.info --rc lcov_branch_coverage=1
 	open ./report/index.html
 
+valgrind:
+	make test
+	$(CC) -g tests/*.c s21_string.a -o test -lcheck -lpthread -lm -D_GNU_SOURCE -lrt -lsubunit
+	valgrind --leak-check=full --show-leak-kinds=all -s ./test
